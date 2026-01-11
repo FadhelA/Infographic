@@ -1,7 +1,9 @@
 import {
   getItem,
   getItems,
+  getTheme,
   getThemeColors,
+  getThemes,
   ItemDatum,
   renderSVG,
 } from '@antv/infographic';
@@ -10,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { getStoredValues, setStoredValues } from './utils/storage';
 
 const items = getItems();
+const themes = getThemes();
 const STORAGE_KEY = 'item-preview-form-values';
 
 const FULL_DATA = {
@@ -198,17 +201,28 @@ export const ItemPreview = () => {
             </Form.Item>
             <Form.Item label="主题">
               <Select
+                showSearch
                 value={theme}
                 options={[
-                  { label: '亮色', value: 'light' },
-                  { label: '暗色', value: 'dark' },
+                  { label: '亮色 (light)', value: 'light' },
+                  { label: '暗色 (dark)', value: 'dark' },
+                  ...themes.map((t) => ({ label: t, value: t })),
                 ]}
-                onChange={(newTheme: 'light' | 'dark') => {
-                  setTheme(newTheme);
-                  setThemeConfig((pre) => ({
-                    ...pre,
-                    colorBg: newTheme === 'dark' ? '#333' : '#fff',
-                  }));
+                onChange={(newTheme: string) => {
+                  setTheme(newTheme as 'light' | 'dark');
+                  // For registered themes, get colors from the theme
+                  const registeredTheme = getTheme(newTheme);
+                  if (registeredTheme) {
+                    setThemeConfig({
+                      colorPrimary: registeredTheme.colorPrimary || '#FF356A',
+                      colorBg: registeredTheme.colorBg || '#fff',
+                    });
+                  } else {
+                    setThemeConfig((pre) => ({
+                      ...pre,
+                      colorBg: newTheme === 'dark' ? '#333' : '#fff',
+                    }));
+                  }
                 }}
               />
             </Form.Item>

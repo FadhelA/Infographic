@@ -2,6 +2,7 @@ import {
   Data,
   getItems,
   getStructures,
+  getThemes,
   InfographicOptions,
 } from '@antv/infographic';
 import Editor from '@monaco-editor/react';
@@ -29,6 +30,7 @@ const DATA: { label: string; key: string; value: Data }[] = [
 
 const items = getItems();
 const structures = getStructures();
+const themes = getThemes();
 
 const STORAGE_KEY = 'composite-form-values';
 
@@ -210,12 +212,16 @@ export const Composite = () => {
       },
     };
 
+    // Apply theme - if it's a registered theme, use it directly
     if (useHandDrawn) {
       value.theme = 'hand-drawn';
-    }
-
-    if (theme === 'dark') {
-      value.themeConfig.colorBg = '#333';
+    } else if (theme && theme !== 'light') {
+      // For 'dark' or any registered theme (shadcn, etc.)
+      if (theme === 'dark') {
+        value.themeConfig.colorBg = '#333';
+      } else {
+        value.theme = theme;
+      }
     }
     if (enablePalette) {
       value.themeConfig.palette = [
@@ -308,9 +314,11 @@ export const Composite = () => {
               </Form.Item>
               <Form.Item label="主题" name="theme">
                 <Select
+                  showSearch
                   options={[
-                    { label: '亮色', value: 'light' },
-                    { label: '暗色', value: 'dark' },
+                    { label: '亮色 (light)', value: 'light' },
+                    { label: '暗色 (dark)', value: 'dark' },
+                    ...themes.map((t) => ({ label: t, value: t })),
                   ]}
                 />
               </Form.Item>

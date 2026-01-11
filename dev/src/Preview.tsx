@@ -1,4 +1,4 @@
-import { getTemplate, getTemplates, ThemeConfig } from '@antv/infographic';
+import { getTemplate, getTemplates, getThemes, ThemeConfig } from '@antv/infographic';
 import Editor from '@monaco-editor/react';
 import { Card, Checkbox, ColorPicker, Form, Select } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
@@ -7,6 +7,7 @@ import { COMPARE_DATA, HIERARCHY_DATA, LIST_DATA, SWOT_DATA } from './data';
 import { getStoredValues, setStoredValues } from './utils/storage';
 
 const templates = getTemplates();
+const themes = getThemes();
 const STORAGE_KEY = 'preview-form-values';
 
 const DATA = {
@@ -210,11 +211,12 @@ export const Preview = () => {
               </Form.Item>
               <Form.Item label="主题">
                 <Select
+                  showSearch
                   value={theme}
                   options={[
-                    { label: '亮色', value: 'light' },
-                    { label: '暗色', value: 'dark' },
-                    { label: '手绘风格', value: 'hand-drawn' },
+                    { label: '亮色 (light)', value: 'light' },
+                    { label: '暗色 (dark)', value: 'dark' },
+                    ...themes.map((t) => ({ label: t, value: t })),
                   ]}
                   onChange={(newTheme: string) => {
                     setTheme(newTheme);
